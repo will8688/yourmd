@@ -8,37 +8,21 @@ server.connection({
     routes: {
         cors: true
     }
-})
+});
+
+const searchDictionary = require("./searchDictionary");
 
 server.route({
     method: 'GET',
     path: '/',
     handler: (req, res) => {
-        const dict = ['congestive heart disease',
-            'headache',
-            'HA',
-            'sore head',
-            'head pain',
-            'cephalalgia',
-            'cephalgia',
-            'cephalodynia',
-            'head ache',
-            'headaches'];
-        let s = req.query.s;
-        s = s.replace(/[~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|_+=-]/g,'');
-        const words = s.split(' ');
-        let dict2 = [];
-        let $return = [];
-        words.map((word) => {
-            dict2 = dict.map((phrase) => {
-                let s2 = phrase.search(word);
-                if(s2 !== -1){
-                    $return.push(phrase);
-                }
-                return phrase;
-            });
-        });
-        res($return)
+        if(req && req.query && req.query.s){
+            const search = req.query.s;
+            const result = searchDictionary(search);
+            res(result);
+        }else{
+            res('Param "s" is required');
+        }
     }
 })
 
@@ -80,4 +64,4 @@ server.register({
 
         console.log('...and we\'re up & runnin at: ', server.info.uri)
     })
-})
+});
